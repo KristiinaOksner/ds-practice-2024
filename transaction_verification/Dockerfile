@@ -6,7 +6,7 @@ FROM python:3.11
 WORKDIR /app
 
 # Copy the requirements file to the working directory
-COPY ./transaction_ver/requirements.txt .
+COPY ./transaction_verification/requirements.txt .
 
 # Install the Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
@@ -15,4 +15,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install reloadium
 
 # Set the command to run the application
-CMD reloadium run "transaction_ver/src/app.py"
+CMD reloadium run "transaction_verification/src/app.py"

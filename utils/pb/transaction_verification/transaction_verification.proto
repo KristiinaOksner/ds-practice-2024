@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package transactionverification;
+
+message User {
+    string name = 1;
+    string contact = 2;
+}
+
+message CreditCard {
+    string number = 1;
+    // You can include other fields like expiry date, CVV, etc.
+}
+
+message TransactionVerificationRequest {
+    repeated string items = 1;
+    User user = 2;
+    CreditCard credit_card = 3;
+}
+
+message TransactionVerificationResponse {
+    bool is_valid = 1;
+    string message = 2;
+}
+
+service TransactionVerification {
+    rpc VerifyTransaction(TransactionVerificationRequest) returns (TransactionVerificationResponse) {}
+}

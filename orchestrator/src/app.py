@@ -49,6 +49,10 @@ def checkout():
     """
     Responds with a JSON object containing the order ID, status, and suggested books.
     """
+
+    # Get the request JSON data
+    request_data = request.json
+    
     # Print request object data
     print("Request Data:", request.json)
 

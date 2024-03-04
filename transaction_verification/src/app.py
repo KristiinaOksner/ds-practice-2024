@@ -3,6 +3,15 @@ from concurrent import futures
 import grpc
 import transaction_verification_pb2
 import transaction_verification_pb2_grpc
+import sys
+import os
+
+# This set of lines are needed to import the gRPC stubs.
+# The path of the stubs is relative to the current file, or absolute inside the container.
+# Change these lines only if strictly needed.
+FILE = __file__ if '__file__' in globals() else os.getenv("PYTHONFILE", "")
+utils_path = os.path.abspath(os.path.join(FILE, '../../../utils/pb/transaction_verification'))
+sys.path.insert(0, utils_path)
 
 # Define the transaction verification service logic
 class TransactionVerificationServicer(transaction_verification_pb2_grpc.TransactionVerificationServicer):

@@ -15,16 +15,25 @@ sys.path.insert(0, utils_path)
 import book_suggestions_pb2
 import book_suggestions_pb2_grpc
 
+# Define a list of books with title and author
+books = [
+    {"title": "Book A", "author": "Author X"},
+    {"title": "Book B", "author": "Author Y"},
+    {"title": "Book C", "author": "Author X"},
+    {"title": "Book D", "author": "Author Z"}
+]
+
 class BookRecommendationService(book_suggestions_pb2_grpc.BookSuggestionsServiceServicer):
     def GetBookSuggestions(self, request, context):
-        # for all the books, recommend another book by the same author
-        book_list = request.books
         response = book_suggestions_pb2.BookSuggestionsResponse()
-        for book in book_list:
-            new_book = book_suggestions_pb2.Book()
-            new_book.title = "Another book by " + book.author
-            new_book.author = book.author
-            response.suggestions.append(new_book)
+        
+        for requested_book in request.books:
+            requested_author = requested_book.author
+            for book in books:
+                if book["author"] == requested_author:
+                    new_book = book_suggestions_pb2.Book(title=book["title"], author=book["author"])
+                    response.suggestions.append(new_book)
+        
         return response
 
 def serve():

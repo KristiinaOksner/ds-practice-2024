@@ -30,7 +30,7 @@ executor = ThreadPoolExecutor(max_workers=3)
 # Establish gRPC connection with fraud_detection service
 def detect_fraud(country, city):
     logging.info("Received request to check fraud for country: %s, city: %s", country, city)
-    with grpc.insecure_channel('localhost:50051') as channel:
+    with grpc.insecure_channel('fraud_detection:50051') as channel:
         stub = fraud_detection_pb2_grpc.FraudDetectionServiceStub(channel)
         response = stub.CheckFraud(fraud_detection_pb2.FraudDetectionRequest(country=country, city=city))
         logging.info("Fraud check completed. Is fraudulent: %s, Reason: %s", response.is_fraudulent, response.reason)
@@ -39,7 +39,7 @@ def detect_fraud(country, city):
 # Establish gRPC connection with transaction_verification service
 def verify_transaction(items, user, credit_card):
     logging.info("Received request to verify transaction with items: %s, user: %s, credit card: %s", items, user, credit_card)
-    with grpc.insecure_channel('localhost:50052') as channel:
+    with grpc.insecure_channel('transaction_verification:50052') as channel:
         stub = transaction_verification_pb2_grpc.TransactionVerificationServiceStub(channel)
         response = stub.VerifyTransaction(transaction_verification_pb2.TransactionVerificationRequest(items=items, user=user, creditCard=credit_card))
         logging.info("Transaction verification completed. Is valid: %s, Message: %s", response.is_valid, response.message)
@@ -48,7 +48,7 @@ def verify_transaction(items, user, credit_card):
 # Establish gRPC connection with book_suggestions service
 def get_book_suggestions(books):
     logging.info("Received request to get book suggestions for books: %s", books)
-    with grpc.insecure_channel('localhost:50053') as channel:
+    with grpc.insecure_channel('book_suggestions:50053') as channel:
         stub = book_suggestions_pb2_grpc.BookSuggestionsServiceStub(channel)
         books_pb = [book_suggestions_pb2.Book(title=book['title'], author=book['author']) for book in books]
         response = stub.GetBookSuggestions(book_suggestions_pb2.BookSuggestionsRequest(books=books_pb))

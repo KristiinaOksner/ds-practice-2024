@@ -1,5 +1,6 @@
 import sys
 import os
+import logging
 
 # This set of lines are needed to import the gRPC stubs.
 # The path of the stubs is relative to the current file, or absolute inside the container.
@@ -36,6 +37,7 @@ def serve():
         FraudDetectionServicer(), server)
     server.add_insecure_port('[::]:50051')
     server.start()
+    logging.info("Fraud Detection Service running on port 50051")
     server.wait_for_termination()
 
 if __name__ == '__main__':

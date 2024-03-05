@@ -13,18 +13,27 @@ import fraud_detection_pb2_grpc
 import grpc
 from concurrent import futures
 
-class FraudDetectionServicer(fraud_detection_pb2_grpc.FraudDetectionServicer):
+class FraudDetectionServicer(fraud_detection_pb2_grpc.FraudDetectionServiceServicer):
     def CheckFraud(self, request, context):
-        total_amount = sum(request.order_amounts)
-        if len(request.order_amounts) > 3 and total_amount > 500:  # Simple fraud detection logic
-            return fraud_detection_pb2.FraudCheckResponse(is_fraudulent=True, reason="Multiple high-value orders")
-        else:
-            return fraud_detection_pb2.FraudCheckResponse(is_fraudulent=False, reason="No fraud detected")
+        country = request.country
+        city = request.city
+        
+        # Perform updated fraud detection logic based on country and city
+        is_fraudulent, reason = self.detect_fraud(country, city)
+        
+        return fraud_detection_pb2.FraudDetectionResponse(is_fraudulent=is_fraudulent, reason=reason)
 
+    def detect_fraud(self, country, city):
+        # Updated fraud detection logic: Transactions from 'Thailand' and 'Bangkok' are considered fraudulent
+        if country.lower() == 'thailand' and city.lower() == 'bangkok':
+            return True, "Transactions from Bangkok, Thailand are considered fraudulent."
+        
+        return False, "Transaction is not considered fraudulent."
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    fraud_detection_pb2_grpc.add_FraudDetectionServicer_to_server(FraudDetectionServicer(), server)
+    fraud_detection_pb2_grpc.add_FraudDetectionServiceServicer_to_server(
+        FraudDetectionServicer(), server)
     server.add_insecure_port('[::]:50051')
     server.start()
     server.wait_for_termination()

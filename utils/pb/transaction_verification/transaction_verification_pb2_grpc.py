@@ -5,7 +5,7 @@ import grpc
 import transaction_verification_pb2 as transaction__verification__pb2
 
 
-class TransactionVerificationStub(object):
+class TransactionVerificationServiceStub(object):
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -15,13 +15,13 @@ class TransactionVerificationStub(object):
             channel: A grpc.Channel.
         """
         self.VerifyTransaction = channel.unary_unary(
-                '/transactionverification.TransactionVerification/VerifyTransaction',
+                '/transaction_verification.TransactionVerificationService/VerifyTransaction',
                 request_serializer=transaction__verification__pb2.TransactionVerificationRequest.SerializeToString,
                 response_deserializer=transaction__verification__pb2.TransactionVerificationResponse.FromString,
                 )
 
 
-class TransactionVerificationServicer(object):
+class TransactionVerificationServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def VerifyTransaction(self, request, context):
@@ -31,7 +31,7 @@ class TransactionVerificationServicer(object):
         raise NotImplementedError('Method not implemented!')
 
 
-def add_TransactionVerificationServicer_to_server(servicer, server):
+def add_TransactionVerificationServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'VerifyTransaction': grpc.unary_unary_rpc_method_handler(
                     servicer.VerifyTransaction,
@@ -40,12 +40,12 @@ def add_TransactionVerificationServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'transactionverification.TransactionVerification', rpc_method_handlers)
+            'transaction_verification.TransactionVerificationService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
  # This class is part of an EXPERIMENTAL API.
-class TransactionVerification(object):
+class TransactionVerificationService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
@@ -59,7 +59,7 @@ class TransactionVerification(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/transactionverification.TransactionVerification/VerifyTransaction',
+        return grpc.experimental.unary_unary(request, target, '/transaction_verification.TransactionVerificationService/VerifyTransaction',
             transaction__verification__pb2.TransactionVerificationRequest.SerializeToString,
             transaction__verification__pb2.TransactionVerificationResponse.FromString,
             options, channel_credentials,

@@ -5,7 +5,7 @@ from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Map
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
-class BookSuggestionRequest(_message.Message):
+class BookSuggestionsRequest(_message.Message):
     __slots__ = ("num_suggestions",)
     NUM_SUGGESTIONS_FIELD_NUMBER: _ClassVar[int]
     num_suggestions: int
@@ -19,7 +19,7 @@ class Book(_message.Message):
     author: str
     def __init__(self, title: _Optional[str] = ..., author: _Optional[str] = ...) -> None: ...
 
-class BookSuggestionResponse(_message.Message):
+class BookSuggestionsResponse(_message.Message):
     __slots__ = ("suggestions",)
     SUGGESTIONS_FIELD_NUMBER: _ClassVar[int]
     suggestions: _containers.RepeatedCompositeFieldContainer[Book]

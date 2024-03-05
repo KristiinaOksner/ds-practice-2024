@@ -14,21 +14,21 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1etransaction_verification.proto\x12\x17transactionverification\"%\n\x04User\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontact\x18\x02 \x01(\t\"\x1c\n\nCreditCard\x12\x0e\n\x06number\x18\x01 \x01(\t\"\x96\x01\n\x1eTransactionVerificationRequest\x12\r\n\x05items\x18\x01 \x03(\t\x12+\n\x04user\x18\x02 \x01(\x0b\x32\x1d.transactionverification.User\x12\x38\n\x0b\x63redit_card\x18\x03 \x01(\x0b\x32#.transactionverification.CreditCard\"D\n\x1fTransactionVerificationResponse\x12\x10\n\x08is_valid\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t2\xa4\x01\n\x17TransactionVerification\x12\x88\x01\n\x11VerifyTransaction\x12\x37.transactionverification.TransactionVerificationRequest\x1a\x38.transactionverification.TransactionVerificationResponse\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1etransaction_verification.proto\x12\x18transaction_verification\"%\n\x04User\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontact\x18\x02 \x01(\t\"A\n\nCreditCard\x12\x0e\n\x06number\x18\x01 \x01(\t\x12\x16\n\x0e\x65xpirationDate\x18\x02 \x01(\t\x12\x0b\n\x03\x63vv\x18\x03 \x01(\t\"\x97\x01\n\x1eTransactionVerificationRequest\x12\r\n\x05items\x18\x01 \x03(\t\x12,\n\x04user\x18\x02 \x01(\x0b\x32\x1e.transaction_verification.User\x12\x38\n\ncreditCard\x18\x03 \x01(\x0b\x32$.transaction_verification.CreditCard\"D\n\x1fTransactionVerificationResponse\x12\x10\n\x08is_valid\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t2\xad\x01\n\x1eTransactionVerificationService\x12\x8a\x01\n\x11VerifyTransaction\x12\x38.transaction_verification.TransactionVerificationRequest\x1a\x39.transaction_verification.TransactionVerificationResponse\"\x00\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'transaction_verification_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
   DESCRIPTOR._options = None
-  _globals['_USER']._serialized_start=59
-  _globals['_USER']._serialized_end=96
-  _globals['_CREDITCARD']._serialized_start=98
-  _globals['_CREDITCARD']._serialized_end=126
-  _globals['_TRANSACTIONVERIFICATIONREQUEST']._serialized_start=129
-  _globals['_TRANSACTIONVERIFICATIONREQUEST']._serialized_end=279
-  _globals['_TRANSACTIONVERIFICATIONRESPONSE']._serialized_start=281
-  _globals['_TRANSACTIONVERIFICATIONRESPONSE']._serialized_end=349
-  _globals['_TRANSACTIONVERIFICATION']._serialized_start=352
-  _globals['_TRANSACTIONVERIFICATION']._serialized_end=516
+  _globals['_USER']._serialized_start=60
+  _globals['_USER']._serialized_end=97
+  _globals['_CREDITCARD']._serialized_start=99
+  _globals['_CREDITCARD']._serialized_end=164
+  _globals['_TRANSACTIONVERIFICATIONREQUEST']._serialized_start=167
+  _globals['_TRANSACTIONVERIFICATIONREQUEST']._serialized_end=318
+  _globals['_TRANSACTIONVERIFICATIONRESPONSE']._serialized_start=320
+  _globals['_TRANSACTIONVERIFICATIONRESPONSE']._serialized_end=388
+  _globals['_TRANSACTIONVERIFICATIONSERVICE']._serialized_start=391
+  _globals['_TRANSACTIONVERIFICATIONSERVICE']._serialized_end=564
 # @@protoc_insertion_point(module_scope)

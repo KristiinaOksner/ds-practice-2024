@@ -7,25 +7,47 @@ import os
 FILE = __file__ if '__file__' in globals() else os.getenv("PYTHONFILE", "")
 utils_path = os.path.abspath(os.path.join(FILE, '../../../utils/pb/fraud_detection'))
 sys.path.insert(0, utils_path)
-import fraud_detection_pb2 as fraud_detection
-import fraud_detection_pb2_grpc as fraud_detection_grpc
+import fraud_detection_pb2
+import fraud_detection_pb2_grpc
+utils_path_transactionverfication = os.path.abspath(os.path.join(FILE, '../../../utils/pb/transaction_verification'))
+sys.path.insert(0, utils_path_transactionverfication)
+import transaction_verification_pb2
+import transaction_verification_pb2_grpc
+utils_path_booksuggestions = os.path.abspath(os.path.join(FILE, '../../../utils/pb/book_suggestions'))
+sys.path.insert(0, utils_path_booksuggestions)
+import book_suggestions_pb2
+import book_suggestions_pb2_grpc
 
 import grpc
+from concurrent import futures
 
-def greet(name='you'):
-    # Establish a connection with the fraud-detection gRPC service.
+# Establish gRPC connection with fraud_detection service
+def detect_fraud(country, city):
     with grpc.insecure_channel('fraud_detection:50051') as channel:
-        # Create a stub object.
-        stub = fraud_detection_grpc.HelloServiceStub(channel)
-        # Call the service through the stub object.
-        response = stub.SayHello(fraud_detection.HelloRequest(name=name))
-    return response.greeting
+        stub = fraud_detection_pb2_grpc.FraudDetectionServiceStub(channel)
+        response = stub.CheckFraud(fraud_detection_pb2.FraudDetectionRequest(country=country, city=city))
+        return response.is_fraudulent, response.reason
+
+# Establish gRPC connection with transaction_verification service
+def verify_transaction(items, user, credit_card):
+    with grpc.insecure_channel('transaction_verification:50052') as channel:
+        stub = transaction_verification_pb2_grpc.TransactionVerificationServiceStub(channel)
+        response = stub.VerifyTransaction(transaction_verification_pb2.TransactionVerificationRequest(items=items, user=user, creditCard=credit_card))
+        return response.is_valid, response.message
+
+# Establish gRPC connection with book_suggestions service
+def get_book_suggestions(books):
+    with grpc.insecure_channel('book_suggestions:50053') as channel:
+        stub = book_suggestions_pb2_grpc.BookSuggestionsServiceStub(channel)
+        books_pb = [book_suggestions_pb2.Book(title=book['title'], author=book['author']) for book in books]
+        response = stub.GetBookSuggestions(book_suggestions_pb2.BookSuggestionsRequest(books=books_pb))
+        return [book.title for book in response.suggestions]
 
 # Import Flask.
 # Flask is a web framework for Python.
 # It allows you to build a web application quickly.
 # For more information, see https://flask.palletsprojects.com/en/latest/
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 # Create a simple Flask app.
@@ -33,40 +55,39 @@ app = Flask(__name__)
 # Enable CORS for the app.
 CORS(app)
 
-# Define a GET endpoint.
-@app.route('/', methods=['GET'])
-def index():
-    """
-    Responds with 'Hello, [name]' when a GET request is made to '/' endpoint.
-    """
-    # Test the fraud-detection gRPC service.
-    response = greet(name='orchestrator')
-    # Return the response.
-    return response
-
+# Define a POST endpoint.
 @app.route('/checkout', methods=['POST'])
 def checkout():
-    """
-    Responds with a JSON object containing the order ID, status, and suggested books.
-    """
+    data = request.json
 
-    # Get the request JSON data
-    request_data = request.json
-    
-    # Print request object data
-    print("Request Data:", request.json)
+    country = data.get('country')
+    city = data.get('city')
+    is_fraudulent, reason = detect_fraud(country, city)
 
-    # Dummy response following the provided YAML specification for the bookstore
-    order_status_response = {
-        'orderId': '12345',
-        'status': 'Order Approved',
-        'suggestedBooks': [
-            {'bookId': '123', 'title': 'Dummy Book 1', 'author': 'Author 1'},
-            {'bookId': '456', 'title': 'Dummy Book 2', 'author': 'Author 2'}
-        ]
-    }
+    items = data.get('items', [])
+    user = data.get('user')
+    credit_card = data.get('creditCard')
+    is_valid_transaction, transaction_message = verify_transaction(items, user, credit_card)
 
-    return order_status_response
+    if is_valid_transaction and not is_fraudulent:
+        order_status_response = {
+            'orderId': data.get('orderId'),
+            'status': 'Failed',
+            'reason': reason,
+            'message': transaction_message
+        }
+    else:
+        book_data = data.get('books', [])
+        book_list = [{'title': book['title'], 'author': book['author']} for book in book_data]
+        book_recommendations = get_book_suggestions(book_list)
+
+        order_status_response = {
+            'orderId': data.get('orderId'),
+            'status': 'Success',
+            'suggestedBooks': book_recommendations
+        }
+
+    return jsonify(order_status_response)
 
 
 if __name__ == '__main__':

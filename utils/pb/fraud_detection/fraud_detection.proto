@@ -2,16 +2,16 @@ syntax = "proto3";
 
 package fraud_detection;
 
-service FraudDetection {
-    rpc CheckFraud (CheckRequest) returns (FraudCheckResponse) {}
+service FraudDetectionService {
+    rpc CheckFraud (FraudDetectionRequest) returns (FraudDetectionResponse) {}
 }
 
-message CheckRequest {
-    string user_id = 1;
-    repeated double order_amounts = 2;
+message FraudDetectionRequest {
+    string country = 1;
+    string city = 2;
 }
 
-message FraudCheckResponse {
+message FraudDetectionResponse {
     bool is_fraudulent = 1;
     string reason = 2;
 }

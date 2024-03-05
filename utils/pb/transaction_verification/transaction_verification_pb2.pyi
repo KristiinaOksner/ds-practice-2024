@@ -14,20 +14,24 @@ class User(_message.Message):
     def __init__(self, name: _Optional[str] = ..., contact: _Optional[str] = ...) -> None: ...
 
 class CreditCard(_message.Message):
-    __slots__ = ("number",)
+    __slots__ = ("number", "expirationDate", "cvv")
     NUMBER_FIELD_NUMBER: _ClassVar[int]
+    EXPIRATIONDATE_FIELD_NUMBER: _ClassVar[int]
+    CVV_FIELD_NUMBER: _ClassVar[int]
     number: str
-    def __init__(self, number: _Optional[str] = ...) -> None: ...
+    expirationDate: str
+    cvv: str
+    def __init__(self, number: _Optional[str] = ..., expirationDate: _Optional[str] = ..., cvv: _Optional[str] = ...) -> None: ...
 
 class TransactionVerificationRequest(_message.Message):
-    __slots__ = ("items", "user", "credit_card")
+    __slots__ = ("items", "user", "creditCard")
     ITEMS_FIELD_NUMBER: _ClassVar[int]
     USER_FIELD_NUMBER: _ClassVar[int]
-    CREDIT_CARD_FIELD_NUMBER: _ClassVar[int]
+    CREDITCARD_FIELD_NUMBER: _ClassVar[int]
     items: _containers.RepeatedScalarFieldContainer[str]
     user: User
-    credit_card: CreditCard
-    def __init__(self, items: _Optional[_Iterable[str]] = ..., user: _Optional[_Union[User, _Mapping]] = ..., credit_card: _Optional[_Union[CreditCard, _Mapping]] = ...) -> None: ...
+    creditCard: CreditCard
+    def __init__(self, items: _Optional[_Iterable[str]] = ..., user: _Optional[_Union[User, _Mapping]] = ..., creditCard: _Optional[_Union[CreditCard, _Mapping]] = ...) -> None: ...
 
 class TransactionVerificationResponse(_message.Message):
     __slots__ = ("is_valid", "message")

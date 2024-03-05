@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package bookshop;
+package book_suggestions;
 
-message BookSuggestionRequest {
+message BookSuggestionsRequest {
     int32 num_suggestions = 1;
 }
 
@@ -11,10 +11,10 @@ message Book {
     string author = 2;
 }
 
-message BookSuggestionResponse {
+message BookSuggestionsResponse {
     repeated Book suggestions = 1;
 }
 
-service BookSuggestions {
-    rpc GetBookSuggestions(BookSuggestionRequest) returns (BookSuggestionResponse) {}
+service BookSuggestionsService {
+    rpc GetBookSuggestions(BookSuggestionsRequest) returns (BookSuggestionsResponse) {}
 }

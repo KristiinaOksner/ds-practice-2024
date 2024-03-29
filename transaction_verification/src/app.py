@@ -13,6 +13,8 @@ sys.path.insert(0, utils_path)
 import transaction_verification_pb2
 import transaction_verification_pb2_grpc
 
+import datetime
+
 class TransactionVerificationService(transaction_verification_pb2_grpc.TransactionVerificationServiceServicer):
     def VerifyTransaction(self, request, context):
         items = request.items
@@ -26,11 +28,19 @@ class TransactionVerificationService(transaction_verification_pb2_grpc.Transacti
         if len(credit_card.number) != 16:
             is_valid = False
             message = "Invalid credit card number length. Must be 16 digits."
-
-        # check if credit card expirtation data is after 2025
-        if credit_card.expirationDate < "25":
-            is_valid = False
-            message = "Invalid expiration date. Must be 25 or later."
+        else:
+            # Parse expiration date string to a datetime object
+            try:
+                expiration_date = datetime.strptime(credit_card.expirationDate, "%m/%y")  # Assuming date format MM/YY
+                current_date = datetime.now()
+                
+                # Check if expiration date is in the future (after the end of 2024)
+                if expiration_date < current_date.replace(year=current_date.year + 1, month=1, day=1):
+                    is_valid = False
+                    message = "Invalid expiration date. Must be after 2024."
+            except ValueError:
+                is_valid = False
+                message = "Invalid expiration date format. Must be in MM/YY format."
 
         return transaction_verification_pb2.TransactionVerificationResponse(is_valid=is_valid, message=message)
 

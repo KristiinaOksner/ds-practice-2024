@@ -52,7 +52,7 @@ def get_book_suggestions(books):
         stub = book_suggestions_pb2_grpc.BookSuggestionsServiceStub(channel)
         books_pb = [book_suggestions_pb2.Book(title=book['title'], author=book['author']) for book in books]
         response = stub.GetBookSuggestions(book_suggestions_pb2.BookSuggestionsRequest(books=books_pb))
-        logging.info("Book suggestions fetched successfully")
+        logging.info("Book suggestions fetched successfully, response.suggestions = ", response.suggestions)
         return [book.title for book in response.suggestions]
 
 # asynchronous run detect_fraud
@@ -85,20 +85,25 @@ def checkout():
     data = request.json
     logging.info("Received checkout request with data: %s", data)
 
-    country = data.get('country')
-    city = data.get('city')
+    billing_address = data.get('billingAddress', {})
+    logging.info("Received checkout request with billing_address: %s", billing_address)
+    country = billing_address.get('country')
+    city = billing_address.get('city')
     fraud_future = async_detect_fraud(country, city)
+    logging.info("checkout return fraud_future = ", fraud_future)
 
     items = data.get('items', [])
     user = data.get('user')
     credit_card = data.get('creditCard')
+    logging.info("Received checkout request with items: %s, user: %s, credit card: %s", items, user, credit_card)
     transaction_future = async_verify_transaction(items, user, credit_card)
+    logging.info("checkout return transaction_future = ", transaction_future)
 
     fraud_result = fraud_future.result()
     transaction_result = transaction_future.result()
 
     if transaction_result[0] and not fraud_result[0]:
-        book_data = data.get('books', [])
+        book_data = data.get('items', [])
         book_list = [{'title': book['title'], 'author': book['author']} for book in book_data]
         book_future = async_get_book_suggestions(book_list)
         book_recommendations = book_future.result()

@@ -3,7 +3,7 @@ syntax = "proto3";
 package book_suggestions;
 
 message BookSuggestionsRequest {
-    int32 num_suggestions = 1;
+    repeated Book books = 1;
 }
 
 message Book {

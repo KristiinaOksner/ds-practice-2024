@@ -13,6 +13,7 @@ import fraud_detection_pb2_grpc as fraud_detection_grpc
 import grpc
 from concurrent import futures
 
+<<<<<<< Updated upstream
 # Create a class to define the server functions, derived from
 # fraud_detection_pb2_grpc.HelloServiceServicer
 class HelloService(fraud_detection_grpc.HelloServiceServicer):
@@ -36,6 +37,40 @@ def serve():
     port = "50051"
     server.add_insecure_port("[::]:" + port)
     # Start the server
+=======
+class FraudDetectionService(fraud_detection_pb2_grpc.FraudDetectionServiceServicer):
+
+    def _is_user_data_fraudulent(self, user: fraud_detection_pb2.User) -> bool:
+        fraudulent_names = ["alex", "coco", "monica"]
+        return user.name.lower() in fraudulent_names
+
+    def _is_credit_card_fraudulent(self, creditCard: fraud_detection_pb2.CreditCard) -> bool:
+        return '8888' in creditCard.number
+    def CheckFraud(self, request: fraud_detection_pb2.FraudDetectionRequest, context) -> fraud_detection_pb2.FraudDetectionResponse:
+        fraudulent_user = self._is_user_data_fraudulent(request.user)
+        fraudulent_card = self._is_credit_card_fraudulent(request.creditCard)
+
+        is_bangkok_address = request.billingAddress.country == "Thailand" and request.billingAddress.city == "Bangkok"
+
+        if fraudulent_user or fraudulent_card or is_bangkok_address:
+            reason_message = ""
+            if fraudulent_user:
+                reason_message += "User data is flagged as fraudulent. "
+            if fraudulent_card:
+                reason_message += "Credit card data is flagged as fraudulent. "
+            if is_bangkok_address:
+                reason_message += "Billing address is in Bangkok, Thailand as fraudulent."
+
+            return fraud_detection_pb2.FraudDetectionResponse(is_fraudulent=True, reason=reason_message)
+        else:
+            return fraud_detection_pb2.FraudDetectionResponse(is_fraudulent=False, reason="No fraud detected.")
+
+def serve():
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    fraud_detection_pb2_grpc.add_FraudDetectionServiceServicer_to_server(
+        FraudDetectionService(), server)
+    server.add_insecure_port('[::]:50051')
+>>>>>>> Stashed changes
     server.start()
     print("Server started. Listening on port 50051.")
     # Keep thread alive

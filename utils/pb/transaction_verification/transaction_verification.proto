@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package transaction_verification;
+
+message User {
+    string name = 1;
+    string contact = 2;
+}
+
+message CreditCard {
+    string number = 1;
+    string expirationDate = 2;
+    string cvv = 3;
+}
+
+message Item {
+    string name = 1;
+    int32 quantity = 2;
+}
+
+message ListOfItems {
+    repeated Item items = 1;
+}
+
+message BoolResponse {
+    bool result = 1;
+    string message = 2; 
+}
+
+message TransactionVerificationRequest {
+    repeated Item items = 1;
+    User user = 2;
+    CreditCard creditCard = 3;
+}
+
+message TransactionVerificationResponse {
+    bool is_valid = 1;
+    string message = 2;
+}
+
+service TransactionVerificationService {
+    rpc VerifyTransaction(TransactionVerificationRequest) returns (TransactionVerificationResponse) {}
+    rpc IsBooksEmpty(ListOfItems) returns (BoolResponse) {}
+    rpc IsUserDataEmpty(User) returns (BoolResponse) {}
+    rpc IsCreditCardFormatCorrect(CreditCard) returns (BoolResponse) {}
+}

@@ -2,12 +2,42 @@ syntax = "proto3";
 
 package hello;
 
+<<<<<<< Updated upstream
 service HelloService {
     rpc SayHello (HelloRequest) returns (HelloResponse);
 }
 
 message HelloRequest {
     string name = 1;
+=======
+message User {
+    string name = 1;
+    string contact = 2;
+}
+
+message CreditCard {
+    string number = 1;
+    string expirationDate = 2;
+    string cvv = 3;
+}
+
+message BillingAddress {
+    string street = 1;
+    string city = 2;
+    string state = 3;
+    string country = 4;
+    string zip = 5;
+}
+
+service FraudDetectionService {
+    rpc CheckFraud (FraudDetectionRequest) returns (FraudDetectionResponse) {}
+}
+
+message FraudDetectionRequest {
+    User user = 1;
+    CreditCard creditCard = 2;
+    BillingAddress billingAddress = 3;
+>>>>>>> Stashed changes
 }
 
 message HelloResponse {

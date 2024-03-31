@@ -1,0 +1,12 @@
+
+fraud_detection/.DS_Store
+frontend/.DS_Store
+frontend/src/.DS_Store
+utils/pb/book_suggestions/__pycache__/book_suggestions_pb2.cpython-312.pyc
+utils/pb/book_suggestions/__pycache__/book_suggestions_pb2_grpc.cpython-312.pyc
+utils/pb/fraud_detection/__pycache__/fraud_detection_pb2.cpython-312.pyc
+utils/pb/fraud_detection/__pycache__/fraud_detection_pb2_grpc.cpython-312.pyc
+.DS_Store
+utils/pb/transaction_verification/__pycache__/transaction_verification_pb2.cpython-312.pyc
+utils/pb/transaction_verification/__pycache__/transaction_verification_pb2_grpc.cpython-312.pyc
+.vscode/settings.json

@@ -4,6 +4,8 @@ from concurrent import futures
 import grpc
 import sys
 import os
+import datetime
+import logging
 
 # This set of lines are needed to import the gRPC stubs.
 # The path of the stubs is relative to the current file, or absolute inside the container.
@@ -17,6 +19,7 @@ import transaction_verification_pb2_grpc
 import datetime
 
 class TransactionVerificationService(transaction_verification_pb2_grpc.TransactionVerificationServiceServicer):
+<<<<<<< Updated upstream
 
     def _is_books_empty(self, items: List[transaction_verification_pb2.Item]) -> bool:
         return not items or len(items) == 0
@@ -57,6 +60,35 @@ class TransactionVerificationService(transaction_verification_pb2_grpc.Transacti
             return transaction_verification_pb2.TransactionVerificationResponse(is_valid=False, message="Invalid credit card expiration date format.")
         
         return transaction_verification_pb2.TransactionVerificationResponse(is_valid=True, message="Transaction verification successful.")
+=======
+    def VerifyUser(self, request, context):
+        user = request.user
+        if not user.name or not user.contact:
+            logging.info("User %s information is incomplete", user)
+            return transaction_verification_pb2.TransactionVerificationResponse(is_valid=False, message="User information is incomplete")
+        else:
+            logging.info("User %s information is valid", user)
+            return transaction_verification_pb2.TransactionVerificationResponse(is_valid=True, message="User information is valid")
+
+    def VerifyCreditCard(self, request, context):
+        credit_card = request.creditCard
+        if not credit_card.number or not credit_card.expirationDate or not credit_card.cvv:
+            logging.info("Credit card %s information is incomplete", credit_card)
+            return transaction_verification_pb2.TransactionVerificationResponse(is_valid=False, message="Credit card information is incomplete")
+        else:
+            logging.info("Credit card %s information is valid", credit_card)
+            return transaction_verification_pb2.TransactionVerificationResponse(is_valid=True, message="Credit card information is valid")
+
+    def VerifyCreditCardInvalid(self, request, context):
+        credit_card = request.creditCard.expirationDate
+        exp_date = datetime.strptime(credit_card, "%Y-%m")
+        if datetime.now().date() >= exp_date.date():
+            logging.info("Credit card date %s has expired", exp_date)
+            return transaction_verification_pb2.TransactionVerificationResponse(is_valid=False, message="Credit card has expired")
+        else:
+            logging.info("Credit card date %s is valid", exp_date)
+            return transaction_verification_pb2.TransactionVerificationResponse(is_valid=True, message="Invalid credit card expiration date")
+>>>>>>> Stashed changes
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
@@ -64,6 +96,7 @@ def serve():
         TransactionVerificationService(), server)
     server.add_insecure_port('[::]:50052')
     server.start()
+    logging.info("Transaction VerificationService running on port 50052")
     server.wait_for_termination()
 
 if __name__ == '__main__':

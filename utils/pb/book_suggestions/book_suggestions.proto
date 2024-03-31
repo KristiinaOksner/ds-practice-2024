@@ -6,7 +6,11 @@ message BookSuggestionsRequest {
     repeated Item books = 1;
 }
 
+<<<<<<< Updated upstream
 message Item {
+=======
+message Book {
+>>>>>>> Stashed changes
     string name = 1;
     int32 quantity = 2;
 }

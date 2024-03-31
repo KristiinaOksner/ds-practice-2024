@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream
 from ast import List
+=======
+import logging
+>>>>>>> Stashed changes
 import grpc
 from concurrent import futures
 import random
@@ -19,6 +23,7 @@ import book_suggestions_pb2
 import book_suggestions_pb2_grpc
 
 # Define a list of books
+<<<<<<< Updated upstream
 STATIC_BOOK_LIST = [
     Item(name="Harry Potter and the Philosopher's Stone"),
     Item(name="The Lord of the Rings"),
@@ -41,12 +46,31 @@ class BookRecommendationService(book_suggestions_pb2_grpc.BookSuggestionsService
         response = BookSuggestionsResponse()
         response.suggestions.extend(suggested_books)
         return response
+=======
+static_books = [
+    {"name": "Harry Potter and the Sorcerer's Stone", "quantity": 10},
+    {"name": "The Great Gatsby", "quantity": 5},
+    {"name": "To Kill a Mockingbird", "quantity": 8}
+]
+
+class BookRecommendationService(book_suggestions_pb2_grpc.BookSuggestionsServiceServicer):
+    def GetBookSuggestions(self, request, context):
+        suggested_books = []
+        for book in static_books:
+            for req_book in request.books:
+                if req_book.name.lower() in book["name"].lower():
+                    suggested_book = book_suggestions_pb2.Book(name=book["name"], quantity=book["quantity"])
+                    suggested_books.append(suggested_book)
+        logging.info("Book Suggestions Service: Suggested books: %s", suggested_books)
+        return book_suggestions_pb2.BookSuggestionsResponse(suggestions=suggested_books)
+>>>>>>> Stashed changes
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     book_suggestions_pb2_grpc.add_BookSuggestionsServiceServicer_to_server(BookRecommendationService(), server)
     server.add_insecure_port('[::]:50053')
     server.start()
+    logging.info("Book Suggestions Service running on port 50053")
     server.wait_for_termination()
 
 if __name__ == '__main__':

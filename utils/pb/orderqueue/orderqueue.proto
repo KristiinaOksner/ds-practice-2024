@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package orderqueue;
+
+service OrderQueueService {
+    rpc EnqueueOrder(EnqueueOrderRequest) returns (EnqueueOrderResponse) {}
+    rpc DequeueOrder(DequeueOrderRequest) returns (DequeueOrderResponse) {}
+}
+
+message User {
+    string name = 1;
+    string contact = 2;
+}
+
+message CreditCard {
+    string number = 1;
+    string expirationDate = 2;
+    string cvv = 3;
+}
+
+message Book {
+    string name = 1;
+    int32 quantity = 2;
+}
+
+message BillingAddress {
+    string street = 1;
+    string city = 2;
+    string state = 3;
+    string zip = 4;
+    string country = 5;
+}
+
+message Device {
+    string type = 1;
+    string model = 2;
+    string os = 3;
+}
+
+message Order {
+    User user = 1;
+    CreditCard creditCard = 2;
+    BillingAddress billingAddress = 3;
+    repeated Book books = 4;
+    string userComment = 5;
+    string shippingMethod = 6;
+    string giftMessage = 7;
+    string giftWrapping = 8;
+    Device device = 9;
+}
+
+message EnqueueOrderRequest {
+    Order order = 1;
+}
+
+message EnqueueOrderResponse {
+    string message = 1;
+}
+
+message DequeueOrderRequest {
+    string message = 1;
+}
+
+message DequeueOrderResponse {
+    string message = 1;
+}

@@ -5,6 +5,7 @@ from typing import ClassVar as _ClassVar, Mapping as _Mapping, Optional as _Opti
 DESCRIPTOR: _descriptor.FileDescriptor
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 class HelloRequest(_message.Message):
     __slots__ = ("name",)
     NAME_FIELD_NUMBER: _ClassVar[int]
@@ -19,6 +20,32 @@ class User(_message.Message):
     contact: str
     def __init__(self, name: _Optional[str] = ..., contact: _Optional[str] = ...) -> None: ...
 
+=======
+class FraudDetectionRequest(_message.Message):
+    __slots__ = ("user", "creditCard")
+    USER_FIELD_NUMBER: _ClassVar[int]
+    CREDITCARD_FIELD_NUMBER: _ClassVar[int]
+    user: User
+    creditCard: CreditCard
+    def __init__(self, user: _Optional[_Union[User, _Mapping]] = ..., creditCard: _Optional[_Union[CreditCard, _Mapping]] = ...) -> None: ...
+
+class FraudDetectionResponse(_message.Message):
+    __slots__ = ("is_fraudulent", "reason")
+    IS_FRAUDULENT_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    is_fraudulent: bool
+    reason: str
+    def __init__(self, is_fraudulent: bool = ..., reason: _Optional[str] = ...) -> None: ...
+
+class User(_message.Message):
+    __slots__ = ("name", "contact")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    CONTACT_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    contact: str
+    def __init__(self, name: _Optional[str] = ..., contact: _Optional[str] = ...) -> None: ...
+
+>>>>>>> Stashed changes
 class CreditCard(_message.Message):
     __slots__ = ("number", "expirationDate", "cvv")
     NUMBER_FIELD_NUMBER: _ClassVar[int]
@@ -28,6 +55,7 @@ class CreditCard(_message.Message):
     expirationDate: str
     cvv: str
     def __init__(self, number: _Optional[str] = ..., expirationDate: _Optional[str] = ..., cvv: _Optional[str] = ...) -> None: ...
+<<<<<<< Updated upstream
 
 class BillingAddress(_message.Message):
     __slots__ = ("street", "city", "state", "country", "zip")
@@ -59,3 +87,5 @@ class HelloResponse(_message.Message):
     GREETING_FIELD_NUMBER: _ClassVar[int]
     greeting: str
     def __init__(self, greeting: _Optional[str] = ...) -> None: ...
+=======
+>>>>>>> Stashed changes

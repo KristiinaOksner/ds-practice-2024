@@ -14,6 +14,7 @@ import grpc
 from concurrent import futures
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 # Create a class to define the server functions, derived from
 # fraud_detection_pb2_grpc.HelloServiceServicer
 class HelloService(fraud_detection_grpc.HelloServiceServicer):
@@ -64,6 +65,24 @@ class FraudDetectionService(fraud_detection_pb2_grpc.FraudDetectionServiceServic
             return fraud_detection_pb2.FraudDetectionResponse(is_fraudulent=True, reason=reason_message)
         else:
             return fraud_detection_pb2.FraudDetectionResponse(is_fraudulent=False, reason="No fraud detected.")
+=======
+class FraudDetectionServicer(fraud_detection_pb2_grpc.FraudDetectionServiceServicer):
+    def CheckFraudUser(self, request, context):
+        if request.user.name.lower() in ['coco', 'alex', 'monica']:
+            logging.info('User %s is considered fraudulent.', request.user.name)
+            return fraud_detection_pb2.FraudDetectionResponse(is_fraudulent=True, reason='The user is considered fraudulent.')
+        else:
+            logging.info('User %s is not considered fraudulent.', request.user.name)
+            return fraud_detection_pb2.FraudDetectionResponse(is_fraudulent=False, reason='The user is not fraudulent.')
+
+    def CheckFraudCreditCard(self, request, context):
+        if request.creditCard.number.count('8') == 6:
+            logging.info('Credit card %s is considered fraudulent.', request.creditCard.number)
+            return fraud_detection_pb2.FraudDetectionResponse(is_fraudulent=True, reason='The credit card is considered fraudulent.')
+        else:
+            logging.info('Credit card %s is not considered fraudulent.', request.creditCard.number)
+            return fraud_detection_pb2.FraudDetectionResponse(is_fraudulent=False, reason='The credit card is not fraudulent.')
+>>>>>>> Stashed changes
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

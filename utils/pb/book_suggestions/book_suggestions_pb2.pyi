@@ -11,7 +11,11 @@ class BookSuggestionsRequest(_message.Message):
     books: _containers.RepeatedCompositeFieldContainer[Item]
     def __init__(self, books: _Optional[_Iterable[_Union[Item, _Mapping]]] = ...) -> None: ...
 
+<<<<<<< Updated upstream
 class Item(_message.Message):
+=======
+class Book(_message.Message):
+>>>>>>> Stashed changes
     __slots__ = ("name", "quantity")
     NAME_FIELD_NUMBER: _ClassVar[int]
     QUANTITY_FIELD_NUMBER: _ClassVar[int]

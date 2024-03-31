@@ -30,12 +30,14 @@ message BillingAddress {
 }
 
 service FraudDetectionService {
-    rpc CheckFraud (FraudDetectionRequest) returns (FraudDetectionResponse) {}
+    rpc CheckFraudUser (FraudDetectionRequest) returns (FraudDetectionResponse) {}
+    rpc CheckFraudCreditCard (FraudDetectionRequest) returns (FraudDetectionResponse) {}
 }
 
 message FraudDetectionRequest {
     User user = 1;
     CreditCard creditCard = 2;
+<<<<<<< Updated upstream
     BillingAddress billingAddress = 3;
 >>>>>>> Stashed changes
 }
@@ -43,3 +45,22 @@ message FraudDetectionRequest {
 message HelloResponse {
     string greeting = 1;
 }
+=======
+}
+
+message FraudDetectionResponse {
+    bool is_fraudulent = 1;
+    string reason = 2;
+}
+
+message User {
+    string name = 1;
+    string contact = 2;
+}
+
+message CreditCard {
+    string number = 1;
+    string expirationDate = 2;
+    string cvv = 3;
+}
+>>>>>>> Stashed changes

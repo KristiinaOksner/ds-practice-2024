@@ -1,7 +1,6 @@
-from google.protobuf.internal import containers as _containers
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Mapping, Optional as _Optional, Union as _Union
+from typing import ClassVar as _ClassVar, Mapping as _Mapping, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
@@ -32,14 +31,19 @@ class Item(_message.Message):
     def __init__(self, name: _Optional[str] = ..., quantity: _Optional[int] = ...) -> None: ...
 
 class TransactionVerificationRequest(_message.Message):
-    __slots__ = ("items", "user", "creditCard")
-    ITEMS_FIELD_NUMBER: _ClassVar[int]
+    __slots__ = ("user", "creditCard")
     USER_FIELD_NUMBER: _ClassVar[int]
     CREDITCARD_FIELD_NUMBER: _ClassVar[int]
+<<<<<<< Updated upstream
     items: _containers.RepeatedCompositeFieldContainer[Item]
     user: User
     creditCard: CreditCard
     def __init__(self, items: _Optional[_Iterable[_Union[Item, _Mapping]]] = ..., user: _Optional[_Union[User, _Mapping]] = ..., creditCard: _Optional[_Union[CreditCard, _Mapping]] = ...) -> None: ...
+=======
+    user: User
+    creditCard: CreditCard
+    def __init__(self, user: _Optional[_Union[User, _Mapping]] = ..., creditCard: _Optional[_Union[CreditCard, _Mapping]] = ...) -> None: ...
+>>>>>>> Stashed changes
 
 class TransactionVerificationResponse(_message.Message):
     __slots__ = ("is_valid", "message")

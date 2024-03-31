@@ -28,9 +28,14 @@ message BoolResponse {
 }
 
 message TransactionVerificationRequest {
+<<<<<<< Updated upstream
     repeated Item items = 1;
     User user = 2;
     CreditCard creditCard = 3;
+=======
+    User user = 1;
+    CreditCard creditCard = 2;
+>>>>>>> Stashed changes
 }
 
 message TransactionVerificationResponse {
@@ -39,8 +44,14 @@ message TransactionVerificationResponse {
 }
 
 service TransactionVerificationService {
+<<<<<<< Updated upstream
     rpc VerifyTransaction(TransactionVerificationRequest) returns (TransactionVerificationResponse) {}
     rpc IsBooksEmpty(ListOfItems) returns (BoolResponse) {}
     rpc IsUserDataEmpty(User) returns (BoolResponse) {}
     rpc IsCreditCardFormatCorrect(CreditCard) returns (BoolResponse) {}
+=======
+    rpc VerifyUser(TransactionVerificationRequest) returns (TransactionVerificationResponse) {}
+    rpc VerifyCreditCard(TransactionVerificationRequest) returns (TransactionVerificationResponse) {}
+    rpc VerifyCreditCardInvalid(TransactionVerificationRequest) returns (TransactionVerificationResponse) {}
+>>>>>>> Stashed changes
 }

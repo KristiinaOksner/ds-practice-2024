@@ -13,29 +13,9 @@ message CreditCard {
     string cvv = 3;
 }
 
-message Item {
-    string name = 1;
-    int32 quantity = 2;
-}
-
-message ListOfItems {
-    repeated Item items = 1;
-}
-
-message BoolResponse {
-    bool result = 1;
-    string message = 2; 
-}
-
 message TransactionVerificationRequest {
-<<<<<<< Updated upstream
-    repeated Item items = 1;
-    User user = 2;
-    CreditCard creditCard = 3;
-=======
     User user = 1;
     CreditCard creditCard = 2;
->>>>>>> Stashed changes
 }
 
 message TransactionVerificationResponse {
@@ -44,14 +24,7 @@ message TransactionVerificationResponse {
 }
 
 service TransactionVerificationService {
-<<<<<<< Updated upstream
-    rpc VerifyTransaction(TransactionVerificationRequest) returns (TransactionVerificationResponse) {}
-    rpc IsBooksEmpty(ListOfItems) returns (BoolResponse) {}
-    rpc IsUserDataEmpty(User) returns (BoolResponse) {}
-    rpc IsCreditCardFormatCorrect(CreditCard) returns (BoolResponse) {}
-=======
     rpc VerifyUser(TransactionVerificationRequest) returns (TransactionVerificationResponse) {}
     rpc VerifyCreditCard(TransactionVerificationRequest) returns (TransactionVerificationResponse) {}
     rpc VerifyCreditCardInvalid(TransactionVerificationRequest) returns (TransactionVerificationResponse) {}
->>>>>>> Stashed changes
 }

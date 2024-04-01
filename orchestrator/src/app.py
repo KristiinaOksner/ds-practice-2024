@@ -50,6 +50,7 @@ orderexecutor_stub = orderexecutor_pb2_grpc.OrderExecutorStub(grpc.insecure_chan
 def verify_user(order):
     logging.info(f"Get User verification request for order #{order['id']}")
     update_vector_clock(service='transaction_verification', order_id=order['id'])
+    logging.info(f"update vector clock for order #{order['id']}, current vector clock: {order_vector_clocks["transaction_verification"][order['id']]}")
     user_verification_response = transaction_stub.VerifyUser(transaction_verification_pb2.TransactionVerificationRequest(user=order["user"]))
     logging.info(f"User verification response for order #{order['id']}: {user_verification_response}")
     if not user_verification_response.is_valid:
@@ -59,6 +60,7 @@ def verify_user(order):
 def verify_credit_card(order):
     logging.info(f"Get Credit card verification request for order #{order['id']}")
     update_vector_clock(service='transaction_verification', order_id=order['id'])
+    logging.info(f"update vector clock for order #{order['id']}, current vector clock: {order_vector_clocks["transaction_verification"][order['id']]}")
     credit_card_verification_response = transaction_stub.VerifyCreditCard(transaction_verification_pb2.TransactionVerificationRequest(creditCard=order["creditCard"]))
     logging.info(f"Credit card verification response for order #{order['id']}: {credit_card_verification_response}")
     if not credit_card_verification_response.is_valid:
@@ -68,6 +70,7 @@ def verify_credit_card(order):
 def check_fraud_user(order):
     logging.info(f"Get Fraud user check request for order #{order['id']}")
     update_vector_clock(service='fraud_detection', order_id=order['id'])
+    logging.info(f"update vector clock for order #{order['id']}, current vector clock: {order_vector_clocks["fraud_detection"][order['id']]}")
     fraud_user_response = fraud_stub.CheckFraudUser(fraud_detection_pb2.FraudDetectionRequest(user=order["user"]))
     logging.info(f"Fraud user check response for order #{order['id']}: {fraud_user_response}")
     if fraud_user_response.is_fraudulent:
@@ -77,6 +80,7 @@ def check_fraud_user(order):
 def verify_credit_card_invalid(order):
     logging.info(f"Get Credit card invalid check request for order #{order['id']}")
     update_vector_clock(service='transaction_verification', order_id=order['id'])
+    logging.info(f"update vector clock for order #{order['id']}, current vector clock: {order_vector_clocks["transaction_verification"][order['id']]}")
     credit_card_invalid_response = transaction_stub.VerifyCreditCardInvalid(transaction_verification_pb2.TransactionVerificationRequest(creditCard=order["creditCard"]))
     logging.info(f"Credit card invalid check response for order #{order['id']}: {credit_card_invalid_response}")
     if not credit_card_invalid_response.is_valid:
@@ -86,6 +90,7 @@ def verify_credit_card_invalid(order):
 def check_fraud_credit_card(order):
     logging.info(f"Get Fraud user check request for order #{order['id']}")
     update_vector_clock(service='fraud_detection', order_id=order['id'])
+    logging.info(f"update vector clock for order #{order['id']}, current vector clock: {order_vector_clocks["fraud_detection"][order['id']]}")
     fraud_credit_card_response = fraud_stub.CheckFraudCreditCard(fraud_detection_pb2.FraudDetectionRequest(creditCard=order["creditCard"]))
     logging.info(f"Fraud credit card check response for order #{order['id']}: {fraud_credit_card_response}")
     if fraud_credit_card_response.is_fraudulent:
@@ -95,6 +100,7 @@ def check_fraud_credit_card(order):
 def get_book_suggestions(order):
     logging.info(f"Get Book suggestions request for order #{order['id']}")
     update_vector_clock(service='book_suggestions', order_id=order['id'])
+    logging.info(f"update vector clock for order #{order['id']}, current vector clock: {order_vector_clocks["book_suggestions"][order['id']]}")
     book_suggestions_response = suggestion_stub.GetBookSuggestions(book_suggestions_pb2.BookSuggestionsRequest(books=order["items"]))
     logging.info(f"Book suggestions for order #{order['id']}: {book_suggestions_response}")
     return book_suggestions_response
@@ -112,7 +118,7 @@ def stop_threads():
         if thread != threading.current_thread():
             thread.join()
 
-# Initialize vector clock for each order in each service
+# define vector clock for each order in each service
 order_vector_clocks = {
     'fraud_detection': {},
     'transaction_verification': {},
@@ -121,7 +127,7 @@ order_vector_clocks = {
 
 def update_vector_clock(service, order_id):
     if order_id not in order_vector_clocks[service]:
-        order_vector_clocks[service][order_id] = 1
+        order_vector_clocks[service][order_id] = 0
     else:
         order_vector_clocks[service][order_id] += 1
 
@@ -155,60 +161,25 @@ def broadcast_clear_data_message(service, final_vector_clock):
     else:
         logging.error(f"Unknown service: {service}")
 
-# Import Flask.
-# Flask is a web framework for Python.
-# It allows you to build a web application quickly.
-# For more information, see https://flask.palletsprojects.com/en/latest/
-from flask import Flask, request
-from flask_cors import CORS
+async def process_order(data):
+    user_result = await verify_user(data)
+    credit_card_result = await verify_credit_card(data)
+    fraud_user_result = await check_fraud_user(data)
+    credit_card_invalid_result = await verify_credit_card_invalid(data)
+    fraud_credit_card_result = await check_fraud_credit_card(data)
+    book_suggestions_result = await get_book_suggestions(data)
 
-# Create a simple Flask app.
-app = Flask(__name__)
-# Enable CORS for the app.
-CORS(app)
+    order_status_response = {
+        'orderId': data['id'],
+        'status': 'Failed',
+        'reason': "",
+        'message': ""
+    }
 
-@app.route('/checkout', methods=['POST'])
-def checkout():
-    loop = asyncio.get_event_loop()
-    data = request.json
-
-    orderId = generate_unique_order_id
-    data["id"] = orderId
-
-    # Initialize vector clocks for the order in each service
-    for service in order_vector_clocks:
-        order_vector_clocks[service][orderId] = 0
-
-    # Create a ThreadPoolExecutor
-    with ThreadPoolExecutor(max_workers=6) as executor:
-        # Submit tasks to the executor in the desired order
-        future_user = executor.submit(verify_user, data, order_vector_clocks['transaction_verification'][orderId])
-        future_credit_card = executor.submit(verify_credit_card, data, order_vector_clocks['transaction_verification'][orderId])
-        future_fraud_user = executor.submit(check_fraud_user, data, order_vector_clocks['fraud_detection'][orderId])
-        future_credit_card_invalid = executor.submit(verify_credit_card_invalid, data, order_vector_clocks['transaction_verification'][orderId])
-        future_fraud_credit_card = executor.submit(check_fraud_credit_card, data, order_vector_clocks['fraud_detection'][orderId])
-        future_book_suggestions = executor.submit(get_book_suggestions, data, order_vector_clocks['book_suggestions'][orderId])
-
-        # Get results from the futures
-        user_result = future_user.result()
-        credit_card_result = future_credit_card.result()
-        fraud_user_result = future_fraud_user.result()
-        credit_card_invalid_result = future_credit_card_invalid.result()
-        fraud_credit_card_result = future_fraud_credit_card.result()
-        book_suggestions_result = future_book_suggestions.result()
-
-        # Process the final order based on the results
-        order_status_response = {
-            'orderId': orderId,
-            'status': 'Failed',
-            'reason': "",
-            'message': ""
-        }
-
-        if user_result[0] and credit_card_result[0] and not fraud_user_result[0] and credit_card_invalid_result[0] and not fraud_credit_card_result[0]:
+    if user_result[0] and credit_card_result[0] and not fraud_user_result[0] and credit_card_invalid_result[0] and not fraud_credit_card_result[0]:
             order_status_response['status'] = 'Success'
             order_status_response['suggestedBooks'] = book_suggestions_result
-        else:
+    else:
 
             if not user_result[0]:
                 order_status_response['message'] = user_result[1]
@@ -221,9 +192,38 @@ def checkout():
                 order_status_response['reason'] = fraud_user_result[1]
             if fraud_credit_card_result[0]:
                 order_status_response['reason'] = fraud_credit_card_result[1]
-        
-        # Call function to broadcast and clear data
-        trigger_clear_data()
+
+    logging.info("process order completed. Order status response: %s", order_status_response)
+    return order_status_response
+
+# Import Flask.
+# Flask is a web framework for Python.
+# It allows you to build a web application quickly.
+# For more information, see https://flask.palletsprojects.com/en/latest/
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+
+# Create a simple Flask app.
+app = Flask(__name__)
+# Enable CORS for the app.
+CORS(app)
+
+@app.route('/checkout', methods=['POST'])
+async def checkout():
+    #loop = asyncio.get_event_loop()
+    data = request.json
+
+    orderId = generate_unique_order_id
+    data["id"] = orderId
+
+    # Initialize vector clocks for the order in each service
+    for service in order_vector_clocks:
+        order_vector_clocks[service][orderId] = 0
+
+    order_status_response = await process_order(data)
+
+    # Call function to broadcast and clear data
+    trigger_clear_data()
 
     logging.info("Checkout process completed. Order status response: %s", order_status_response)
     return jsonify(order_status_response)

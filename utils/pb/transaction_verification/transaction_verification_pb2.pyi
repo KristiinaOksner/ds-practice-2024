@@ -22,28 +22,13 @@ class CreditCard(_message.Message):
     cvv: str
     def __init__(self, number: _Optional[str] = ..., expirationDate: _Optional[str] = ..., cvv: _Optional[str] = ...) -> None: ...
 
-class Item(_message.Message):
-    __slots__ = ("name", "quantity")
-    NAME_FIELD_NUMBER: _ClassVar[int]
-    QUANTITY_FIELD_NUMBER: _ClassVar[int]
-    name: str
-    quantity: int
-    def __init__(self, name: _Optional[str] = ..., quantity: _Optional[int] = ...) -> None: ...
-
 class TransactionVerificationRequest(_message.Message):
     __slots__ = ("user", "creditCard")
     USER_FIELD_NUMBER: _ClassVar[int]
     CREDITCARD_FIELD_NUMBER: _ClassVar[int]
-<<<<<<< Updated upstream
-    items: _containers.RepeatedCompositeFieldContainer[Item]
-    user: User
-    creditCard: CreditCard
-    def __init__(self, items: _Optional[_Iterable[_Union[Item, _Mapping]]] = ..., user: _Optional[_Union[User, _Mapping]] = ..., creditCard: _Optional[_Union[CreditCard, _Mapping]] = ...) -> None: ...
-=======
     user: User
     creditCard: CreditCard
     def __init__(self, user: _Optional[_Union[User, _Mapping]] = ..., creditCard: _Optional[_Union[CreditCard, _Mapping]] = ...) -> None: ...
->>>>>>> Stashed changes
 
 class TransactionVerificationResponse(_message.Message):
     __slots__ = ("is_valid", "message")

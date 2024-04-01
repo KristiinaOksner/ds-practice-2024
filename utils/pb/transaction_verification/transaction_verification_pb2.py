@@ -14,11 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-<<<<<<< Updated upstream
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1etransaction_verification.proto\x12\x18transaction_verification\"%\n\x04User\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontact\x18\x02 \x01(\t\"A\n\nCreditCard\x12\x0e\n\x06number\x18\x01 \x01(\t\x12\x16\n\x0e\x65xpirationDate\x18\x02 \x01(\t\x12\x0b\n\x03\x63vv\x18\x03 \x01(\t\"&\n\x04Item\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x10\n\x08quantity\x18\x02 \x01(\x05\"\xb7\x01\n\x1eTransactionVerificationRequest\x12-\n\x05items\x18\x01 \x03(\x0b\x32\x1e.transaction_verification.Item\x12,\n\x04user\x18\x02 \x01(\x0b\x32\x1e.transaction_verification.User\x12\x38\n\ncreditCard\x18\x03 \x01(\x0b\x32$.transaction_verification.CreditCard\"D\n\x1fTransactionVerificationResponse\x12\x10\n\x08is_valid\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t2\xad\x01\n\x1eTransactionVerificationService\x12\x8a\x01\n\x11VerifyTransaction\x12\x38.transaction_verification.TransactionVerificationRequest\x1a\x39.transaction_verification.TransactionVerificationResponse\"\x00\x62\x06proto3')
-=======
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1etransaction_verification.proto\x12\x18transaction_verification\"%\n\x04User\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontact\x18\x02 \x01(\t\"A\n\nCreditCard\x12\x0e\n\x06number\x18\x01 \x01(\t\x12\x16\n\x0e\x65xpirationDate\x18\x02 \x01(\t\x12\x0b\n\x03\x63vv\x18\x03 \x01(\t\"\x88\x01\n\x1eTransactionVerificationRequest\x12,\n\x04user\x18\x01 \x01(\x0b\x32\x1e.transaction_verification.User\x12\x38\n\ncreditCard\x18\x02 \x01(\x0b\x32$.transaction_verification.CreditCard\"D\n\x1fTransactionVerificationResponse\x12\x10\n\x08is_valid\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t2\xc5\x03\n\x1eTransactionVerificationService\x12\x83\x01\n\nVerifyUser\x12\x38.transaction_verification.TransactionVerificationRequest\x1a\x39.transaction_verification.TransactionVerificationResponse\"\x00\x12\x89\x01\n\x10VerifyCreditCard\x12\x38.transaction_verification.TransactionVerificationRequest\x1a\x39.transaction_verification.TransactionVerificationResponse\"\x00\x12\x90\x01\n\x17VerifyCreditCardInvalid\x12\x38.transaction_verification.TransactionVerificationRequest\x1a\x39.transaction_verification.TransactionVerificationResponse\"\x00\x62\x06proto3')
->>>>>>> Stashed changes
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -29,21 +25,10 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _globals['_USER']._serialized_end=97
   _globals['_CREDITCARD']._serialized_start=99
   _globals['_CREDITCARD']._serialized_end=164
-<<<<<<< Updated upstream
-  _globals['_ITEM']._serialized_start=166
-  _globals['_ITEM']._serialized_end=204
-  _globals['_TRANSACTIONVERIFICATIONREQUEST']._serialized_start=207
-  _globals['_TRANSACTIONVERIFICATIONREQUEST']._serialized_end=390
-  _globals['_TRANSACTIONVERIFICATIONRESPONSE']._serialized_start=392
-  _globals['_TRANSACTIONVERIFICATIONRESPONSE']._serialized_end=460
-  _globals['_TRANSACTIONVERIFICATIONSERVICE']._serialized_start=463
-  _globals['_TRANSACTIONVERIFICATIONSERVICE']._serialized_end=636
-=======
   _globals['_TRANSACTIONVERIFICATIONREQUEST']._serialized_start=167
   _globals['_TRANSACTIONVERIFICATIONREQUEST']._serialized_end=303
   _globals['_TRANSACTIONVERIFICATIONRESPONSE']._serialized_start=305
   _globals['_TRANSACTIONVERIFICATIONRESPONSE']._serialized_end=373
   _globals['_TRANSACTIONVERIFICATIONSERVICE']._serialized_start=376
   _globals['_TRANSACTIONVERIFICATIONSERVICE']._serialized_end=829
->>>>>>> Stashed changes
 # @@protoc_insertion_point(module_scope)

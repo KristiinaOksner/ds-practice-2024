@@ -14,11 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-<<<<<<< Updated upstream
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x16\x62ook_suggestions.proto\x12\x10\x62ook_suggestions\"?\n\x16\x42ookSuggestionsRequest\x12%\n\x05\x62ooks\x18\x01 \x03(\x0b\x32\x16.book_suggestions.Item\"&\n\x04Item\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x10\n\x08quantity\x18\x02 \x01(\x05\"F\n\x17\x42ookSuggestionsResponse\x12+\n\x0bsuggestions\x18\x01 \x03(\x0b\x32\x16.book_suggestions.Item2\x85\x01\n\x16\x42ookSuggestionsService\x12k\n\x12GetBookSuggestions\x12(.book_suggestions.BookSuggestionsRequest\x1a).book_suggestions.BookSuggestionsResponse\"\x00\x62\x06proto3')
-=======
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x16\x62ook_suggestions.proto\x12\x10\x62ook_suggestions\"?\n\x16\x42ookSuggestionsRequest\x12%\n\x05\x62ooks\x18\x01 \x03(\x0b\x32\x16.book_suggestions.Book\"&\n\x04\x42ook\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x10\n\x08quantity\x18\x02 \x01(\x05\"F\n\x17\x42ookSuggestionsResponse\x12+\n\x0bsuggestions\x18\x01 \x03(\x0b\x32\x16.book_suggestions.Book2\x85\x01\n\x16\x42ookSuggestionsService\x12k\n\x12GetBookSuggestions\x12(.book_suggestions.BookSuggestionsRequest\x1a).book_suggestions.BookSuggestionsResponse\"\x00\x62\x06proto3')
->>>>>>> Stashed changes
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -27,13 +23,8 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   DESCRIPTOR._options = None
   _globals['_BOOKSUGGESTIONSREQUEST']._serialized_start=44
   _globals['_BOOKSUGGESTIONSREQUEST']._serialized_end=107
-<<<<<<< Updated upstream
   _globals['_ITEM']._serialized_start=109
   _globals['_ITEM']._serialized_end=147
-=======
-  _globals['_BOOK']._serialized_start=109
-  _globals['_BOOK']._serialized_end=147
->>>>>>> Stashed changes
   _globals['_BOOKSUGGESTIONSRESPONSE']._serialized_start=149
   _globals['_BOOKSUGGESTIONSRESPONSE']._serialized_end=219
   _globals['_BOOKSUGGESTIONSSERVICE']._serialized_start=222

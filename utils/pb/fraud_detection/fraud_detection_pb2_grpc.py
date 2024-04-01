@@ -5,7 +5,7 @@ import grpc
 import fraud_detection_pb2 as fraud__detection__pb2
 
 
-class HelloServiceStub(object):
+class FraudDetectionServiceStub(object):
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -14,12 +14,6 @@ class HelloServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-<<<<<<< Updated upstream
-        self.SayHello = channel.unary_unary(
-                '/hello.HelloService/SayHello',
-                request_serializer=fraud__detection__pb2.HelloRequest.SerializeToString,
-                response_deserializer=fraud__detection__pb2.HelloResponse.FromString,
-=======
         self.CheckFraudUser = channel.unary_unary(
                 '/fraud_detection.FraudDetectionService/CheckFraudUser',
                 request_serializer=fraud__detection__pb2.FraudDetectionRequest.SerializeToString,
@@ -29,16 +23,12 @@ class HelloServiceStub(object):
                 '/fraud_detection.FraudDetectionService/CheckFraudCreditCard',
                 request_serializer=fraud__detection__pb2.FraudDetectionRequest.SerializeToString,
                 response_deserializer=fraud__detection__pb2.FraudDetectionResponse.FromString,
->>>>>>> Stashed changes
                 )
 
 
-class HelloServiceServicer(object):
+class FraudDetectionServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-<<<<<<< Updated upstream
-    def SayHello(self, request, context):
-=======
     def CheckFraudUser(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -46,21 +36,14 @@ class HelloServiceServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def CheckFraudCreditCard(self, request, context):
->>>>>>> Stashed changes
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
 
-def add_HelloServiceServicer_to_server(servicer, server):
+def add_FraudDetectionServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-<<<<<<< Updated upstream
-            'SayHello': grpc.unary_unary_rpc_method_handler(
-                    servicer.SayHello,
-                    request_deserializer=fraud__detection__pb2.HelloRequest.FromString,
-                    response_serializer=fraud__detection__pb2.HelloResponse.SerializeToString,
-=======
             'CheckFraudUser': grpc.unary_unary_rpc_method_handler(
                     servicer.CheckFraudUser,
                     request_deserializer=fraud__detection__pb2.FraudDetectionRequest.FromString,
@@ -70,24 +53,19 @@ def add_HelloServiceServicer_to_server(servicer, server):
                     servicer.CheckFraudCreditCard,
                     request_deserializer=fraud__detection__pb2.FraudDetectionRequest.FromString,
                     response_serializer=fraud__detection__pb2.FraudDetectionResponse.SerializeToString,
->>>>>>> Stashed changes
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'hello.HelloService', rpc_method_handlers)
+            'fraud_detection.FraudDetectionService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
  # This class is part of an EXPERIMENTAL API.
-class HelloService(object):
+class FraudDetectionService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-<<<<<<< Updated upstream
-    def SayHello(request,
-=======
     def CheckFraudUser(request,
->>>>>>> Stashed changes
             target,
             options=(),
             channel_credentials=None,
@@ -97,11 +75,6 @@ class HelloService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-<<<<<<< Updated upstream
-        return grpc.experimental.unary_unary(request, target, '/hello.HelloService/SayHello',
-            fraud__detection__pb2.HelloRequest.SerializeToString,
-            fraud__detection__pb2.HelloResponse.FromString,
-=======
         return grpc.experimental.unary_unary(request, target, '/fraud_detection.FraudDetectionService/CheckFraudUser',
             fraud__detection__pb2.FraudDetectionRequest.SerializeToString,
             fraud__detection__pb2.FraudDetectionResponse.FromString,
@@ -122,6 +95,5 @@ class HelloService(object):
         return grpc.experimental.unary_unary(request, target, '/fraud_detection.FraudDetectionService/CheckFraudCreditCard',
             fraud__detection__pb2.FraudDetectionRequest.SerializeToString,
             fraud__detection__pb2.FraudDetectionResponse.FromString,
->>>>>>> Stashed changes
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

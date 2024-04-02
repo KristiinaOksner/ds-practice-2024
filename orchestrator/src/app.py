@@ -120,7 +120,7 @@ def checkout():
             'reason': fraud_result[1],
             'message': transaction_result[1]
         }
-
+    #here's a spot to add to the queue
     logging.info("Checkout process completed. Order status response: %s", order_status_response)
     return jsonify(order_status_response)
 

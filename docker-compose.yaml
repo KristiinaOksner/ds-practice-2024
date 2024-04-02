@@ -148,3 +148,5 @@ services:
       - ./utils:/app/utils
       # Mount the orderqueue/src directory in the current directory to the /app/orderqueue/src directory in the container
       - ./orderqueue/src:/app/orderqueue/src
+    deploy:
+      - replicas: 3

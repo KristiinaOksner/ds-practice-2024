@@ -73,9 +73,9 @@ class Order(_message.Message):
     userComment: str
     shippingMethod: str
     giftMessage: str
-    giftWrapping: str
+    giftWrapping: bool
     device: Device
-    def __init__(self, user: _Optional[_Union[User, _Mapping]] = ..., creditCard: _Optional[_Union[CreditCard, _Mapping]] = ..., billingAddress: _Optional[_Union[BillingAddress, _Mapping]] = ..., books: _Optional[_Iterable[_Union[Book, _Mapping]]] = ..., userComment: _Optional[str] = ..., shippingMethod: _Optional[str] = ..., giftMessage: _Optional[str] = ..., giftWrapping: _Optional[str] = ..., device: _Optional[_Union[Device, _Mapping]] = ...) -> None: ...
+    def __init__(self, user: _Optional[_Union[User, _Mapping]] = ..., creditCard: _Optional[_Union[CreditCard, _Mapping]] = ..., billingAddress: _Optional[_Union[BillingAddress, _Mapping]] = ..., books: _Optional[_Iterable[_Union[Book, _Mapping]]] = ..., userComment: _Optional[str] = ..., shippingMethod: _Optional[str] = ..., giftMessage: _Optional[str] = ..., giftWrapping: bool = ..., device: _Optional[_Union[Device, _Mapping]] = ...) -> None: ...
 
 class EnqueueOrderRequest(_message.Message):
     __slots__ = ("order",)

@@ -15,30 +15,29 @@ utils_path = os.path.abspath(os.path.join(FILE, '../../../utils/pb/orderqueue'))
 sys.path.insert(0, utils_path)
 import orderqueue_pb2
 import orderqueue_pb2_grpc
-import queue
+from queue import PriorityQueue
 
 class OrderQueueServicer(orderqueue_pb2_grpc.OrderQueueServiceServicer):
 
     def __init__(self):
-        self.priority_queue = queue.PriorityQueue()
-        self.normal_queue = queue.Queue()
+        self.queue = PriorityQueue() 
 
     def EnqueueOrder(self, request, context):
         order = request.order
 
-        order_value = calculate_order_value(order)
-        self.priority_queue.put((order_value, order))
+        order_priority = calculate_order_value(order)  
+        self.queue.put((-order_priority, order))  
+        logging.info (f"Enqueued order with priority {abs(order_priority)}: {order}")
 
         return orderqueue_pb2.EnqueueOrderResponse(message="Order enqueued successfully")
 
     def DequeueOrder(self, request, context):
-        if not self.priority_queue.empty():
-            priority_order = self.priority_queue.get()[1]
-            return orderqueue_pb2.DequeueOrderResponse(message=f"Dequeued priority order: {priority_order}")
-        elif not self.normal_queue.empty():
-            normal_order = self.normal_queue.get()
-            return orderqueue_pb2.DequeueOrderResponse(message=f"Dequeued normal order: {normal_order}")
+        if not self.queue.empty():
+            priority, order = self.queue.get()
+            logging.info(f"Dequeued order with priority {abs(priority)}: {order}")
+            return orderqueue_pb2.DequeueOrderResponse(message=f"Dequeued order with priority {abs(priority)}: {order}")
         else:
+            logging.info("No orders in the queue")
             return orderqueue_pb2.DequeueOrderResponse(message="No orders in the queue")
 
 def calculate_order_value(order):
@@ -46,6 +45,9 @@ def calculate_order_value(order):
 
     for book in order.books:
         total_value += book.quantity
+
+    # more complicate value calculation
+    pass
 
     return total_value
 
@@ -55,6 +57,7 @@ def serve():
         OrderQueueServicer(), server)
     server.add_insecure_port('[::]:50054')
     server.start()
+    logging.info("OrderQueue Service started, running on port 50054")
     server.wait_for_termination()
 
 

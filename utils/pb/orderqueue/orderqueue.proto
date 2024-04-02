@@ -45,7 +45,7 @@ message Order {
     string userComment = 5;
     string shippingMethod = 6;
     string giftMessage = 7;
-    string giftWrapping = 8;
+    bool giftWrapping = 8;
     Device device = 9;
 }
 

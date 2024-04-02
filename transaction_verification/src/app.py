@@ -7,6 +7,8 @@ import os
 import datetime
 import logging
 
+from utils.vectorclock import VectorClock
+
 # This set of lines are needed to import the gRPC stubs.
 # The path of the stubs is relative to the current file, or absolute inside the container.
 # Change these lines only if strictly needed.
@@ -19,7 +21,11 @@ import transaction_verification_pb2_grpc
 import datetime
 
 class TransactionVerificationService(transaction_verification_pb2_grpc.TransactionVerificationServiceServicer):
+    def __init__(self):
+        self.vector_clock = VectorClock(node_id=self._get_unique_node_id()) 
     def VerifyUser(self, request, context):
+        self._update_vector_clock(request)
+
         user = request.user
         if not user.name or not user.contact:
             logging.info("User %s information is incomplete", user)
@@ -29,6 +35,8 @@ class TransactionVerificationService(transaction_verification_pb2_grpc.Transacti
             return transaction_verification_pb2.TransactionVerificationResponse(is_valid=True, message="User information is valid")
 
     def VerifyCreditCard(self, request, context):
+        self._update_vector_clock(request)
+
         credit_card = request.creditCard
         if not credit_card.number or not credit_card.expirationDate or not credit_card.cvv:
             logging.info("Credit card %s information is incomplete", credit_card)
@@ -38,6 +46,8 @@ class TransactionVerificationService(transaction_verification_pb2_grpc.Transacti
             return transaction_verification_pb2.TransactionVerificationResponse(is_valid=True, message="Credit card information is valid")
 
     def VerifyCreditCardInvalid(self, request, context):
+        self._update_vector_clock(request)
+        
         credit_card = request.creditCard.expirationDate
         exp_date = datetime.strptime(credit_card, "%Y-%m")
         if datetime.now().date() >= exp_date.date():
@@ -46,6 +56,11 @@ class TransactionVerificationService(transaction_verification_pb2_grpc.Transacti
         else:
             logging.info("Credit card date %s is valid", exp_date)
             return transaction_verification_pb2.TransactionVerificationResponse(is_valid=True, message="Invalid credit card expiration date")
+        
+    def _update_vector_clock(self, request):
+        client_vector_clock = VectorClock.FromString(request.client_vector_clock.SerializeToString())
+        self.vector_clock.merge(client_vector_clock)
+        self.vector_clock.increment(self.vector_clock.node_id)
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

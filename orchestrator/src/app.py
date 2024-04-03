@@ -10,6 +10,7 @@ import concurrent.futures
 import asyncio
 
 logging.basicConfig(level=logging.INFO)
+from utils.vectorclock import VectorClock
 
 # This set of lines are needed to import the gRPC stubs.
 # The path of the stubs is relative to the current file, or absolute inside the container.
@@ -51,11 +52,10 @@ suggestion_stub = book_suggestions_pb2_grpc.BookSuggestionsServiceStub(grpc.inse
 orderqueue_stub = orderqueue_pb2_grpc.OrderQueueServiceStub(grpc.insecure_channel('orderqueue:50054'))
 orderexecutor_stub = orderexecutor_pb2_grpc.OrderExecutorStub(grpc.insecure_channel('orderexecutor:50055'))
 
-async def verify_user(order):
+async def verify_user(order, vector_clock):
     loop = asyncio.get_running_loop()
     logging.info(f"Get User verification request for order #{order['id']}")
-    update_vector_clock(service='transaction_verification', order_id=order['id'])
-    logging.info(f"update vector clock for order #{order['id']}, current vector clock: {order_vector_clocks["transaction_verification"][order['id']]}")
+    logging.info(f"current vector clock: {order_vector_clocks["transaction_verification"][order['id']]}")
 
     user_verification_future = loop.run_in_executor(executor, lambda: transaction_stub.VerifyUser(
         transaction_verification_pb2.TransactionVerificationRequest(user=order["user"])
@@ -67,11 +67,10 @@ async def verify_user(order):
         handle_failure(order["id"], "User verification failed")
     return user_verification_response
 
-async def verify_credit_card(order):
+async def verify_credit_card(order, vector_clock):
     loop = asyncio.get_running_loop()
     logging.info(f"Get Credit card verification request for order #{order['id']}")
-    update_vector_clock(service='transaction_verification', order_id=order['id'])
-    logging.info(f"update vector clock for order #{order['id']}, current vector clock: {order_vector_clocks["transaction_verification"][order['id']]}")
+    logging.info(f"current vector clock: {order_vector_clocks["transaction_verification"][order['id']]}")
 
     credit_card_verification_future = loop.run_in_executor(executor, lambda: transaction_stub.VerifyCreditCard(
         transaction_verification_pb2.TransactionVerificationRequest(creditCard=order["creditCard"])
@@ -83,11 +82,10 @@ async def verify_credit_card(order):
         handle_failure(order["id"], "Credit card verification failed")
     return credit_card_verification_response
 
-async def check_fraud_user(order):
+async def check_fraud_user(order, vector_clock):
     loop = asyncio.get_running_loop()
     logging.info(f"Get Fraud user check request for order #{order['id']}")
-    update_vector_clock(service='fraud_detection', order_id=order['id'])
-    logging.info(f"update vector clock for order #{order['id']}, current vector clock: {order_vector_clocks["fraud_detection"][order['id']]}")
+    logging.info(f"current vector clock: {order_vector_clocks["fraud_detection"][order['id']]}")
 
     fraud_user_future = loop.run_in_executor(executor, lambda: fraud_stub.CheckFraudUser(
         fraud_detection_pb2.FraudDetectionRequest(user=order["user"])
@@ -99,11 +97,10 @@ async def check_fraud_user(order):
         handle_failure(order["id"], "Fraud user detected")
     return fraud_user_response
 
-async def verify_credit_card_invalid(order):
+async def verify_credit_card_invalid(order, vector_clock):
     loop = asyncio.get_running_loop()
     logging.info(f"Get Credit card invalid check request for order #{order['id']}")
-    update_vector_clock(service='transaction_verification', order_id=order['id'])
-    logging.info(f"update vector clock for order #{order['id']}, current vector clock: {order_vector_clocks["transaction_verification"][order['id']]}")
+    logging.info(f"current vector clock: {order_vector_clocks["transaction_verification"][order['id']]}")
 
     credit_card_invalid_future = loop.run_in_executor(executor, lambda: transaction_stub.VerifyCreditCardInvalid(
         transaction_verification_pb2.TransactionVerificationRequest(creditCard=order["creditCard"])
@@ -114,11 +111,10 @@ async def verify_credit_card_invalid(order):
         handle_failure(order["id"], "Invalid credit card expiration date")
     return credit_card_invalid_response
 
-async def check_fraud_credit_card(order):
+async def check_fraud_credit_card(order, vector_clock):
     loop = asyncio.get_running_loop()
     logging.info(f"Get Fraud user check request for order #{order['id']}")
-    update_vector_clock(service='fraud_detection', order_id=order['id'])
-    logging.info(f"update vector clock for order #{order['id']}, current vector clock: {order_vector_clocks["fraud_detection"][order['id']]}")
+    logging.info(f"current vector clock: {order_vector_clocks["fraud_detection"][order['id']]}")
 
     fraud_credit_card_future = loop.run_in_executor(executor, lambda: fraud_stub.CheckFraudCreditCard(
         fraud_detection_pb2.FraudDetectionRequest(creditCard=order["creditCard"])
@@ -129,11 +125,10 @@ async def check_fraud_credit_card(order):
         handle_failure(order["id"], "Fraud credit card detected")
     return fraud_credit_card_response
 
-async def get_book_suggestions(order):
+async def get_book_suggestions(order, vector_clock):
     loop = asyncio.get_running_loop()
     logging.info(f"Get Book suggestions request for order #{order['id']}")
-    update_vector_clock(service='book_suggestions', order_id=order['id'])
-    logging.info(f"update vector clock for order #{order['id']}, current vector clock: {order_vector_clocks["book_suggestions"][order['id']]}")
+    logging.info(f"current vector clock: {order_vector_clocks["book_suggestions"][order['id']]}")
 
     book_suggestions_future = loop.run_in_executor(executor, lambda: suggestion_stub.GetBookSuggestions(
         book_suggestions_pb2.BookSuggestionsRequest(books=order["items"])
@@ -141,6 +136,30 @@ async def get_book_suggestions(order):
     book_suggestions_response = await book_suggestions_future
     logging.info(f"Book suggestions for order #{order['id']}: {book_suggestions_response}")
     return book_suggestions_response
+
+async def enqueue_order(order, vector_clock):
+    loop = asyncio.get_running_loop()
+    logging.info(f"Get enqueue order request for order #{order['id']}")
+    logging.info(f"current vector clock: {order_vector_clocks["orderqueue"][order['id']]}")
+
+    enqueue_order_future = loop.run_in_executor(executor, lambda: orderqueue_stub.EnqueueOrder(
+        orderqueue_pb2.BookSuggestionsRequest(books=order["items"])
+    ))
+    enqueue_order_response = await enqueue_order_future
+    logging.info(f"enqueue_order_response for order #{order['id']}: {enqueue_order_response}")
+    return enqueue_order_response
+
+async def dnqueue_order(order, vector_clock):
+    loop = asyncio.get_running_loop()
+    logging.info(f"Get dequeue order request for order #{order['id']}")
+    logging.info(f"ucurrent vector clock: {order_vector_clocks["orderqueue"][order['id']]}")
+
+    dnqueue_order_future = loop.run_in_executor(executor, lambda: orderqueue_stub.DequeueOrder(
+        orderqueue_pb2.BookSuggestionsRequest(books=order["items"])
+    ))
+    dnqueue_order_response = await dnqueue_order_future
+    logging.info(f"dnqueue_order_response for order #{order['id']}: {dnqueue_order_response}")
+    return dnqueue_order_response
 
 def handle_failure(order_id, message):
     logging.info(f"handle failure: {message} for {order_id}")
@@ -159,16 +178,14 @@ def stop_threads():
 order_vector_clocks = {
     'transaction_verification': {},
     'fraud_detection':{},
-    'book_suggestions': {}
+    'book_suggestions': {},
+    "orderqueue":{},
+    "orderexecutor":{}
 }
 
-def update_vector_clock(service, order_id):
-    if order_id not in order_vector_clocks[service]:
-        order_vector_clocks[service][order_id] = 0
-    else:
-        order_vector_clocks[service][order_id] += 1
-
-    logging.info(f"Current vector clock for order #{order_id} in {service}: {order_vector_clocks[service][order_id]}")
+def update_vector_clock(original_clock, response_clock):
+    original_clock.merge(response_clock)
+    return original_clock.get_clock()
 
 def trigger_clear_data():
     final_vector_clock = max([max(vc.values()) for vc in order_vector_clocks.values()])
@@ -292,6 +309,7 @@ async def checkout():
     for service in order_vector_clocks:
         order_vector_clocks[service][orderId] = 0
 
+    """"
     tasks = []
     tasks.append(asyncio.create_task(verify_user(data)))
     tasks.append(asyncio.create_task(verify_credit_card(data)))
@@ -299,17 +317,102 @@ async def checkout():
     tasks.append(asyncio.create_task(verify_credit_card_invalid(data)))
     tasks.append(asyncio.create_task(check_fraud_credit_card(data)))
     tasks.append(asyncio.create_task(get_book_suggestions(data)))
-
     await asyncio.gather(*tasks)
+    """
 
+    order_status = 'Order Pending'
+    suggested_books = []
 
-    order_status_response = await process_order(data)
+    # Placeholder for the previous vector clock state
+    previous_vc = None
 
+     # Event a: Verify mandatory user data
+    if previous_vc is None or vector_clock.is_after(previous_vc):
+        is_valid, message, vc_after_a = verify_user(data, vector_clock)
+        if not is_valid:
+            return jsonify({"error": "Mandatory user data is missing", "message": message}), 400
+        vector_clock = VectorClock(vc_after_a)  # Update the vector clock
+    else:
+        return jsonify({"error": "Event sequence error: Mandatory user data verification"}), 500
+        
+    # Update previous_vc for the next check
+    previous_vc = vector_clock.get_clock()
+
+    # Event b: Verify credit card format
+    # Before proceeding, ensure the vector clock has advanced from the previous state
+    if vector_clock.is_after(previous_vc):
+        is_valid, message, vc_after_b = verify_credit_card(data, vector_clock)
+        if not is_valid:
+            return jsonify({"error": "Credit card format is incorrect", "message": message}), 400
+        vector_clock = VectorClock(vc_after_b)  # Update the vector clock
+    else:
+        return jsonify({"error": "Event sequence error: Credit card format verification"}), 500
+
+    # Update previous_vc for the next check
+    previous_vc = vector_clock.get_clock()
+
+    # Event d: Check credit card data for fraud
+    if vector_clock.is_after(previous_vc):
+        is_fraud, reason, vc_after_d = check_fraud_user(data, vector_clock)
+        if is_fraud:
+            return jsonify({"error": "Fraud detected in credit card data", "reason": reason}), 400
+        vector_clock = VectorClock(vc_after_d)  # Update the vector clock
+    else:
+        return jsonify({"error": "Event sequence error: Credit card data fraud check"}), 500
+    previous_vc = vector_clock.get_clock()  # Update previous_vc for the next check
+
+    # Event c: Check user data for fraud
+    if vector_clock.is_after(previous_vc):
+        is_fraud, reason, vc_after_c = verify_credit_card_invalid(data, vector_clock)
+        if is_fraud:
+            return jsonify({"error": "Fraud detected in user data", "reason": reason}), 400
+        vector_clock = VectorClock(vc_after_c)  # Update the vector clock
+    else:
+        return jsonify({"error": "Event sequence error: User data fraud check"}), 500
+    previous_vc = vector_clock.get_clock()  # Update previous_vc for the next check
+
+    # Event e: Generate book suggestions
+    if vector_clock.is_after(previous_vc):
+        title, author, _ = get_book_suggestions(data, vector_clock)
+        suggested_titles, vc_after_e = suggestions(title, author, order_id, vector_clock)
+        if suggested_titles:
+            suggested_books = [{'title': title} for title in suggested_titles]
+            order_status = 'Order Approved'
+        vector_clock = VectorClock(vc_after_e)  # Update the vector clock
+    else:
+        return jsonify({"error": "Event sequence error: Generating book suggestions"}), 500
+    previous_vc = vector_clock.get_clock()  # Update previous_vc for the next check
+
+    # Event f: Enqueue order
+    if vector_clock.is_after(previous_vc):
+        book_titles = [book['title'] for book in suggested_books]
+        user_id = request_data.get('user', {}).get('id', '')  # Assuming user ID is part of the request data
+        success, message, vc_after_f = enqueue_order(data, vector_clock)
+        if not success:
+            return jsonify({"error": "Failed to enqueue order", "message": message}), 400
+        vector_clock = VectorClock(vc_after_f)  # Update the vector clock
+        order_status = 'Order Queued'  # Update order status based on successful enqueue
+    else:
+        return jsonify({"error": "Event sequence error: Enqueue order"}), 500
+    previous_vc = vector_clock.get_clock()  # Update previous_vc for the next check
+
+    # Construct the response
+    response = {
+        'orderId': orderId,
+        'status': order_status,
+        'vectorClock': vector_clock.get_clock(),  # Include the final state of the vector clock
+        'suggestedBooks': suggested_books if order_status == 'Order Approved' else [],
+        'message': "Order processed successfully" if order_status == 'Order Approved' else "Order processing failed"
+    }
+
+    # order_status_response = await process_order(data)
     # Call function to broadcast and clear data
     trigger_clear_data()
 
-    logging.info("Checkout process completed. Order status response: %s", order_status_response)
-    return jsonify(order_status_response)
+    logging.info("Checkout process completed. Order status response: %s", response)
+    #return jsonify(order_status_response)
+
+    return jsonify(response)
 
 if __name__ == '__main__':
     # Run the app in debug mode to enable hot reloading.

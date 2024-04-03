@@ -215,7 +215,7 @@ def broadcast_clear_data_message(service, final_vector_clock):
         #suggestion_stub.ClearData(suggestion_clear_data_message)
     else:
         logging.error(f"Unknown service: {service}")
-
+""""
 async def process_order(data):
     user_result = await verify_user(data)
     credit_card_result = await verify_credit_card(data)
@@ -284,7 +284,8 @@ async def async_execute_service_task(task, data):
     await asyncio.sleep(GLOBAL_VECTOR_CLOCK[task['function']]) 
     GLOBAL_VECTOR_CLOCK[task['function']] += 1 
     await task['function'](data)
-    
+"""
+
 # Import Flask.
 # Flask is a web framework for Python.
 # It allows you to build a web application quickly.
@@ -326,7 +327,7 @@ async def checkout():
     # Placeholder for the previous vector clock state
     previous_vc = None
 
-     # Event a: Verify mandatory user data
+     # Event a: verify_user
     if previous_vc is None or vector_clock.is_after(previous_vc):
         is_valid, message, vc_after_a = verify_user(data, vector_clock)
         if not is_valid:
@@ -338,7 +339,7 @@ async def checkout():
     # Update previous_vc for the next check
     previous_vc = vector_clock.get_clock()
 
-    # Event b: Verify credit card format
+    # Event b: verify_credit_card
     # Before proceeding, ensure the vector clock has advanced from the previous state
     if vector_clock.is_after(previous_vc):
         is_valid, message, vc_after_b = verify_credit_card(data, vector_clock)
@@ -351,7 +352,7 @@ async def checkout():
     # Update previous_vc for the next check
     previous_vc = vector_clock.get_clock()
 
-    # Event d: Check credit card data for fraud
+    # Event d: check_fraud_user
     if vector_clock.is_after(previous_vc):
         is_fraud, reason, vc_after_d = check_fraud_user(data, vector_clock)
         if is_fraud:
@@ -361,7 +362,7 @@ async def checkout():
         return jsonify({"error": "Event sequence error: Credit card data fraud check"}), 500
     previous_vc = vector_clock.get_clock()  # Update previous_vc for the next check
 
-    # Event c: Check user data for fraud
+    # Event c: verify_credit_card_invalid
     if vector_clock.is_after(previous_vc):
         is_fraud, reason, vc_after_c = verify_credit_card_invalid(data, vector_clock)
         if is_fraud:
@@ -383,10 +384,22 @@ async def checkout():
         return jsonify({"error": "Event sequence error: Generating book suggestions"}), 500
     previous_vc = vector_clock.get_clock()  # Update previous_vc for the next check
 
+    # Event e: Generate book suggestions
+    if vector_clock.is_after(previous_vc):
+        title, author, _ = get_book_suggestions(data, vector_clock)
+        suggested_titles, vc_after_e = suggestions(title, author, order_id, vector_clock)
+        if suggested_titles:
+            suggested_books = [{'title': title} for title in suggested_titles]
+            order_status = 'Order Approved'
+        vector_clock = VectorClock(vc_after_e)  # Update the vector clock
+    else:
+        return jsonify({"error": "Event sequence error: Generating book suggestions"}), 500
+    previous_vc = vector_clock.get_clock()  # Update previous_vc for the next check
+
     # Event f: Enqueue order
     if vector_clock.is_after(previous_vc):
         book_titles = [book['title'] for book in suggested_books]
-        user_id = request_data.get('user', {}).get('id', '')  # Assuming user ID is part of the request data
+        #user_id = request_data.get('user', {}).get('id', '')  # Assuming user ID is part of the request data
         success, message, vc_after_f = enqueue_order(data, vector_clock)
         if not success:
             return jsonify({"error": "Failed to enqueue order", "message": message}), 400
